@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Tracker - Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/control-panel.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>Release Tracker</h1>
+                <nav>
+                    <a href="index.html" class="active">Dashboard</a>
+                    <a href="timeline.html">Timeline</a>
+                    <a href="badges.html">Badge Viewer</a>
+                </nav>
+            </div>
+            <div class="header-controls">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search namespaces, workloads, containers, or images...">
+                    <button id="clearSearch">Clear</button>
+                </div>
+                <button id="collectBtn" class="primary">Collect Now</button>
+            </div>
+        </header>
+
+        <div class="releases-section">
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total Releases:</span>
+                    <span id="totalReleases" class="stat-value">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Namespaces:</span>
+                    <span id="totalNamespaces" class="stat-value">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Last Updated:</span>
+                    <span id="lastUpdated" class="stat-value">-</span>
+                </div>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <span>Loading...</span>
+            </div>
+
+            <div class="error" id="error" style="display: none;">
+                <span id="errorMessage"></span>
+                <button id="dismissError">×</button>
+            </div>
+
+            <div class="success" id="success" style="display: none;">
+                <span id="successMessage"></span>
+                <button id="dismissSuccess">×</button>
+            </div>
+
+            <div class="table-container">
+            <table id="releasesTable" class="releases-table">
+                <thead>
+                    <tr>
+                        <th>Namespace</th>
+                        <th>Workload Type</th>
+                        <th>Workload Name</th>
+                        <th>Container</th>
+                        <th>Image Repository</th>
+                        <th>Image Name</th>
+                        <th>Image Tag</th>
+                        <th>Image SHA</th>
+                        <th>Last Seen</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="releasesTableBody">
+                    <!-- Dynamic content will be inserted here -->
+                </tbody>
+            </table>
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <h3>No releases found</h3>
+                <p>Click "Collect Now" to discover container images in your cluster.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

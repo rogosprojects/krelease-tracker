@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Tracker - Timeline</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/timeline.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>Release Tracker</h1>
+                <nav>
+                    <a href="index.html">Dashboard</a>
+                    <a href="timeline.html" class="active">Timeline</a>
+                    <a href="badges.html">Badge Viewer</a>
+                </nav>
+            </div>
+            <div class="header-controls">
+                <div class="component-selector">
+                    <select id="namespaceSelect">
+                        <option value="">Select Namespace...</option>
+                    </select>
+                    <select id="workloadSelect" disabled>
+                        <option value="">Select Workload...</option>
+                    </select>
+                    <select id="containerSelect" disabled>
+                        <option value="">Select Container...</option>
+                    </select>
+                    <button id="loadTimelineBtn" disabled>Load Timeline</button>
+                </div>
+                <button id="backToDashboard">Back to Dashboard</button>
+            </div>
+        </header>
+
+        <div class="component-info" id="componentInfo" style="display: none;">
+            <h3>Release History</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Namespace:</span>
+                    <span id="currentNamespace" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Workload:</span>
+                    <span id="currentWorkload" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Container:</span>
+                    <span id="currentContainer" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Total Releases:</span>
+                    <span id="totalReleases" class="info-value">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <span>Loading timeline...</span>
+        </div>
+
+        <div class="error" id="error" style="display: none;">
+            <span id="errorMessage"></span>
+            <button id="dismissError">×</button>
+        </div>
+
+        <div class="timeline-container" id="timelineContainer" style="display: none;">
+            <div class="timeline-header">
+                <h4>Release Timeline</h4>
+                <div class="timeline-legend">
+                    <span class="legend-item">
+                        <span class="legend-dot"></span>
+                        Release Event
+                    </span>
+                </div>
+            </div>
+            <div class="timeline-chart" id="timelineChart">
+                <!-- Timeline visualization will be rendered here -->
+            </div>
+        </div>
+
+        <div class="releases-list" id="releasesList" style="display: none;">
+            <h4>Release Details</h4>
+            <div class="releases-grid" id="releasesGrid">
+                <!-- Release cards will be rendered here -->
+            </div>
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: block;">
+            <h3>Select a Component</h3>
+            <p>Choose a namespace, workload, and container to view its release timeline.</p>
+        </div>
+    </div>
+
+    <script src="js/timeline.js"></script>
+</body>
+</html>

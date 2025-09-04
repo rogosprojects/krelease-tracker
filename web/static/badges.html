@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Badge Viewer - Release Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .badge-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .badge-form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #007ec6;
+            box-shadow: 0 0 0 2px rgba(0, 126, 198, 0.2);
+        }
+
+        .btn {
+            background: #007ec6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #005a8b;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .badge-url {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            margin-top: 20px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .badge-markdown {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            margin-top: 10px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+        }
+
+        .info-message {
+            color: #0c5460;
+            margin-top: 10px;
+            padding: 10px;
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 4px;
+        }
+
+        .badge-display {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            font-size: 12px;
+            padding: 5px 10px;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>Release Badge Viewer</h1>
+                <nav>
+                    <a href="index.html" class="nav-link">Dashboard</a>
+                    <a href="timeline.html" class="nav-link">Timeline</a>
+                    <a href="badges.html" class="nav-link active">Badge Viewer</a>
+                </nav>
+            </div>
+        </header>
+
+        <div class="badge-form">
+            <h2>Generate Release Badge</h2>
+            <p>Create a badge to display the current release version for a specific client, environment, workload and container. Requires API key authentication.</p>
+
+            <form id="badgeForm">
+                <div class="form-group">
+                    <label for="clientName">Client Name:</label>
+                    <input type="text" id="clientName" name="clientName" placeholder="e.g., client1, acme-corp" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="envName">Environment Name:</label>
+                    <input type="text" id="envName" name="envName" placeholder="e.g., production, staging, dev" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="workloadKind">Workload Kind:</label>
+                    <input type="text" id="workloadKind" name="workloadKind" placeholder="e.g., Deployment, StatefulSet, DaemonSet" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="workloadName">Workload Name:</label>
+                    <input type="text" id="workloadName" name="workloadName" placeholder="e.g., my-app, web-server" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="containerName">Container Name:</label>
+                    <input type="text" id="containerName" name="containerName" placeholder="e.g., web, api, worker" required>
+                </div>
+
+                <button type="submit" class="btn">Generate Badge</button>
+                <button type="button" class="btn btn-secondary">Clear</button>
+            </form>
+
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div id="infoMessage" class="info-message" style="display: none;"></div>
+        </div>
+
+        <div id="badgeContainer" class="badge-container" style="display: none;">
+            <h3>Generated Badge</h3>
+            <div id="badgeDisplay" class="badge-display">
+                <!-- Badge will be displayed here -->
+            </div>
+
+            <div class="badge-url">
+                <strong>Badge URL:</strong><button class="btn copy-btn" onclick="copyToClipboard('badgeUrl')">Copy</button>
+                <div id="badgeUrl"></div>
+            </div>
+
+            <div class="badge-markdown">
+                <strong>Markdown for README:</strong><button class="btn copy-btn" onclick="copyToClipboard('badgeMarkdown')">Copy</button>
+                <div id="badgeMarkdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/badges.js"></script>
+</body>
+</html>
