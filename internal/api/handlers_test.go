@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"release-tracker/internal/config"
-	"release-tracker/internal/database"
+	"krelease-tracker/internal/config"
+	"krelease-tracker/internal/database"
 )
 
 // DatabaseInterface defines the interface for database operations

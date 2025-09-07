@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"release-tracker/internal/config"
-	"release-tracker/internal/database"
-	"release-tracker/internal/kubernetes"
+	"krelease-tracker/internal/config"
+	"krelease-tracker/internal/database"
+	"krelease-tracker/internal/kubernetes"
 
 	"github.com/gorilla/mux"
 )

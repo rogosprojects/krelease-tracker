@@ -3,7 +3,7 @@ package sync
 import (
 	"testing"
 
-	"release-tracker/internal/database"
+	"krelease-tracker/internal/database"
 )
 
 func TestNew(t *testing.T) {

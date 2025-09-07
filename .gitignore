@@ -46,7 +46,7 @@ Thumbs.db
 .env.local
 
 # Build artifacts
-release-tracker
+krelease-tracker
 dist/
 build/
 

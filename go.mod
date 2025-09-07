@@ -1,4 +1,4 @@
-module release-tracker
+module krelease-tracker
 
 go 1.21
 

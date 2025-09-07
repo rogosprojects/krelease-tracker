@@ -17,7 +17,7 @@ RUN go mod download
 COPY . .
 
 # Build the application with proper CGO flags for Alpine
-RUN CGO_ENABLED=1 GOOS=linux CGO_CFLAGS="-D_LARGEFILE64_SOURCE" go build -a -installsuffix cgo -o release-tracker ./cmd/server
+RUN CGO_ENABLED=1 GOOS=linux CGO_CFLAGS="-D_LARGEFILE64_SOURCE" go build -a -installsuffix cgo -o krelease-tracker ./cmd/server
 
 # Final stage
 FROM alpine:3.18
@@ -36,7 +36,7 @@ RUN mkdir -p /data && chown appuser:appgroup /data
 WORKDIR /app
 
 # Copy binary from builder stage
-COPY --from=builder /app/release-tracker .
+COPY --from=builder /app/krelease-tracker .
 
 # Copy web assets
 COPY --chown=appuser:appgroup web/ ./web/
@@ -52,4 +52,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
 # Run the application
-CMD ["./release-tracker"]
+CMD ["./krelease-tracker"]

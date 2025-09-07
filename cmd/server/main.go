@@ -9,12 +9,12 @@ import (
 	"syscall"
 	"time"
 
-	"release-tracker/internal/api"
-	"release-tracker/internal/config"
-	"release-tracker/internal/database"
-	"release-tracker/internal/kubernetes"
-	"release-tracker/internal/ping"
-	"release-tracker/internal/sync"
+	"krelease-tracker/internal/api"
+	"krelease-tracker/internal/config"
+	"krelease-tracker/internal/database"
+	"krelease-tracker/internal/kubernetes"
+	"krelease-tracker/internal/ping"
+	"krelease-tracker/internal/sync"
 )
 
 func main() {

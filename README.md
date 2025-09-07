@@ -45,7 +45,7 @@ A Go application that tracks container image deployments across Kubernetes names
 1. **Clone and setup**:
    ```bash
    # Clone the repository first
-   cd release-tracker
+   cd krelease-tracker
    go mod tidy
    ```
 
@@ -71,11 +71,11 @@ helm repo add rogosprojects https://rogosprojects.github.io/helm
 # Update Helm repositories
 helm repo update
 # Install
-helm install release-tracker rogosprojects/release-tracker
+helm install krelease-tracker rogosprojects/krelease-tracker
 ```
 **Done!** Follow the post-installation instructions to access the application.
 
-[Read the full Helm chart documentation with default values.yaml](https://rogosprojects.github.io/helm/charts/release-tracker/)
+[Read the full Helm chart documentation with default values.yaml](https://rogosprojects.github.io/helm/charts/krelease-tracker/)
 
 ## Configuration
 

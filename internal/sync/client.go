@@ -11,7 +11,7 @@ import (
 	"net/url"
 	"time"
 
-	"release-tracker/internal/database"
+	"krelease-tracker/internal/database"
 )
 
 // Client handles syncing pending releases to master
