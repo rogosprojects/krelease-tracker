@@ -30,9 +30,61 @@
     margin-bottom: 20px;
 }
 
+.component-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
 .component-info h3 {
     color: #2c3e50;
-    margin-bottom: 15px;
+    margin: 0;
+}
+
+.btn-badge {
+    background: #007ec6;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.btn-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+    background: #2980b9;
+}
+
+.btn-badge:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.badge-icon {
+    font-size: 16px;
+}
+
+/* Responsive design for badge button */
+@media (max-width: 768px) {
+    .component-info-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .btn-badge {
+        align-self: stretch;
+        justify-content: center;
+    }
 }
 
 .info-grid {

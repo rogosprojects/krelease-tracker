@@ -5,7 +5,8 @@ class Timeline {
         this.selectedComponent = {
             namespace: '',
             workload: '',
-            container: ''
+            container: '',
+            workloadType: ''
         };
         this.apiKey = this.extractAPIKey();
         this.basePath = this.getBasePath();
@@ -137,6 +138,11 @@ class Timeline {
         document.getElementById('backToDashboard').addEventListener('click', () => {
             const url = this.apiKey ? `index.html?apikey=${encodeURIComponent(this.apiKey)}` : 'index.html';
             window.location.href = url;
+        });
+
+        // Badge generation button
+        document.getElementById('generateBadgeBtn').addEventListener('click', () => {
+            this.generateBadge();
         });
 
         // Error dismissal
@@ -310,6 +316,7 @@ class Timeline {
         this.selectedComponent.namespace = namespace;
         this.selectedComponent.workload = '';
         this.selectedComponent.container = '';
+        this.selectedComponent.workloadType = '';
 
         const workloadSelect = document.getElementById('workloadSelect');
         const containerSelect = document.getElementById('containerSelect');
@@ -342,6 +349,7 @@ class Timeline {
     onWorkloadChange(workload) {
         this.selectedComponent.workload = workload;
         this.selectedComponent.container = '';
+        this.selectedComponent.workloadType = '';
 
         const containerSelect = document.getElementById('containerSelect');
         const loadBtn = document.getElementById('loadTimelineBtn');
@@ -397,6 +405,12 @@ class Timeline {
 
             const data = await response.json();
             this.releases = data.history.releases || [];
+
+            // Extract workload type from the first release if available
+            if (this.releases.length > 0 && this.releases[0].workload_type) {
+                this.selectedComponent.workloadType = this.releases[0].workload_type;
+            }
+
             this.updateComponentInfo();
             this.renderTimeline();
             this.renderReleasesList();
@@ -418,6 +432,12 @@ class Timeline {
         document.getElementById('currentWorkload').textContent = workload;
         document.getElementById('currentContainer').textContent = container;
         document.getElementById('totalReleases').textContent = this.releases.length;
+
+        // Show badge generation button when component info is displayed
+        const badgeBtn = document.getElementById('generateBadgeBtn');
+        if (badgeBtn) {
+            badgeBtn.style.display = 'flex';
+        }
     }
 
     renderTimeline() {
@@ -598,6 +618,57 @@ class Timeline {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    generateBadge() {
+        const { namespace, workload, container, workloadType } = this.selectedComponent;
+
+        if (!namespace || !workload || !container) {
+            this.showError('No component selected. Please load a timeline first.');
+            return;
+        }
+
+        if (!this.selectedClient || !this.selectedEnvironment) {
+            this.showError('Client and environment information not available.');
+            return;
+        }
+
+        if (!this.apiKey) {
+            this.showError('API key is required for badge generation. Please add ?apikey=YOUR_API_KEY to the URL.');
+            return;
+        }
+
+        // Use workload type if available, otherwise try to infer from workload name
+        let workloadKind = workloadType;
+        if (!workloadKind) {
+            // Fallback: try to infer from common naming patterns
+            const workloadLower = workload.toLowerCase();
+            if (workloadLower.includes('deployment') || workloadLower.includes('deploy')) {
+                workloadKind = 'Deployment';
+            } else if (workloadLower.includes('statefulset') || workloadLower.includes('sts')) {
+                workloadKind = 'StatefulSet';
+            } else if (workloadLower.includes('daemonset') || workloadLower.includes('ds')) {
+                workloadKind = 'DaemonSet';
+            } else {
+                // Default to Deployment if we can't determine
+                workloadKind = 'Deployment';
+            }
+        }
+
+        // Build the badges.html URL with pre-filled parameters
+        const badgeParams = new URLSearchParams({
+            'apikey': this.apiKey,
+            'client': this.selectedClient,
+            'env': this.selectedEnvironment,
+            'workload-kind': workloadKind,
+            'workload-name': workload,
+            'container': container
+        });
+
+        const badgeUrl = `${this.basePath}/badges.html?${badgeParams.toString()}`;
+
+        // Navigate to the badges page
+        window.location.href = badgeUrl;
     }
 }
 
