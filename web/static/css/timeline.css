@@ -412,6 +412,73 @@
     word-break: break-all;
 }
 
+/* Environment comparison styles */
+.environment-card {
+    position: relative;
+}
+
+.environment-name {
+    background-color: #6c5ce7 !important;
+    color: white !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+.environment-missing {
+    border-left: 4px solid #e74c3c;
+    background: #fdf2f2;
+}
+
+.environment-missing .environment-name {
+    background-color: #e74c3c !important;
+}
+
+.difference-highlight {
+    background-color: #fff3cd !important;
+    border: 1px solid #ffc107 !important;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-weight: 600;
+    color: #856404 !important;
+}
+
+.image-sha-timeline.difference-highlight {
+    background-color: #fff3cd !important;
+    border: 1px solid #ffc107 !important;
+    color: #856404 !important;
+}
+
+/* Enhanced change indicators for environment comparison */
+.change-indicator {
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    margin-left: 8px;
+    margin-right: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.release-card.environment-card.image-change {
+    border-left: 4px solid #f39c12;
+    background: #fef9e7;
+}
+
+.release-card.environment-card.image-change .change-indicator.image-change {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+}
+
+.release-card.environment-card.latest .change-indicator.latest {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+}
+
 /* Responsive design for timeline */
 @media (max-width: 768px) {
     .component-selector {

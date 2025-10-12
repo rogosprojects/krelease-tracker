@@ -60,6 +60,7 @@ class Timeline {
         this.bindEvents();
         this.updateNavigationLinks();
         await this.loadComponents();
+        await this.loadClientsEnvironments();
     }
 
     // Extract API key from URL query parameters
@@ -200,6 +201,18 @@ class Timeline {
         if (savedSelection) {
             this.selectedClient = savedSelection.client;
             this.selectedEnvironment = savedSelection.environment;
+        }
+    }
+
+    async loadClientsEnvironments() {
+        try {
+            const response = await fetch(`${this.basePath}/api/clients-environments`, this.getFetchOptions());
+            if (response.ok) {
+                const data = await response.json();
+                this.clientsEnvironments = data;
+            }
+        } catch (error) {
+            console.warn('Failed to load clients and environments:', error);
         }
     }
 
@@ -413,7 +426,7 @@ class Timeline {
 
             this.updateComponentInfo();
             this.renderTimeline();
-            this.renderReleasesList();
+            await this.renderEnvironmentComparison();
             this.showTimelineContent();
         } catch (error) {
             console.error('Failed to load timeline:', error);
@@ -431,7 +444,10 @@ class Timeline {
         document.getElementById('currentNamespace').textContent = namespace;
         document.getElementById('currentWorkload').textContent = workload;
         document.getElementById('currentContainer').textContent = container;
-        document.getElementById('totalReleases').textContent = this.releases.length;
+
+        // Update the total releases to show environment count instead
+        const environments = this.clientsEnvironments?.clients_environments[this.selectedClient] || [];
+        document.getElementById('totalReleases').textContent = `${environments.length} environments`;
 
         // Show badge generation button when component info is displayed
         const badgeBtn = document.getElementById('generateBadgeBtn');
@@ -489,24 +505,81 @@ class Timeline {
         chart.innerHTML = timelineHTML;
     }
 
-    renderReleasesList() {
+    async renderEnvironmentComparison() {
         const grid = document.getElementById('releasesGrid');
+        const { namespace, workload, container } = this.selectedComponent;
 
-        if (this.releases.length === 0) {
-            grid.innerHTML = '<div class="empty-releases">No releases found</div>';
+        if (!this.clientsEnvironments || !this.selectedClient) {
+            grid.innerHTML = '<div class="empty-releases">Unable to load environment data</div>';
             return;
         }
 
-        grid.innerHTML = this.releases.map((release, index) => {
-            const changeType = this.getChangeType(release, index);
+        const environments = this.clientsEnvironments.clients_environments[this.selectedClient] || [];
+
+        if (environments.length === 0) {
+            grid.innerHTML = '<div class="empty-releases">No environments found for this client</div>';
+            return;
+        }
+
+        // Fetch current releases for each environment
+        const environmentReleases = await this.fetchEnvironmentReleases(environments, namespace, workload, container);
+
+        if (Object.keys(environmentReleases).length === 0) {
+            grid.innerHTML = '<div class="empty-releases">Component not found in any environment</div>';
+            return;
+        }
+
+        // Detect differences across environments
+        const differences = this.detectEnvironmentDifferences(environmentReleases);
+
+        // Update the header to reflect cross-environment comparison
+        const releasesList = document.getElementById('releasesList');
+        const header = releasesList.querySelector('h4');
+        if (header) {
+            header.textContent = 'Cross-Environment Comparison';
+        }
+
+        // Render environment comparison cards
+        grid.innerHTML = environments.map(envName => {
+            const release = environmentReleases[envName];
+            const hasDifferences = differences.environments.includes(envName);
+
+            if (!release) {
+                return `
+                <div class="release-card environment-missing">
+                    <div class="release-card-header">
+                        <span class="release-card-tag environment-name">${this.escapeHtml(envName)}</span>
+                        <span class="change-indicator new-deployment">❌ Not Found</span>
+                    </div>
+                    <div class="release-card-details">
+                        <div class="release-card-detail">
+                            <span class="label">Status:</span>
+                            <span class="value">Component not deployed in this environment</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+
+            const changeType = hasDifferences ? 'image-change' : 'latest';
+            const changeIndicator = hasDifferences ? '⚠️ Different' : '✅ Consistent';
+
             return `
-            <div class="release-card ${index === 0 ? 'latest' : ''} ${changeType}">
+            <div class="release-card environment-card ${changeType}">
                 <div class="release-card-header">
-                    <span class="release-card-tag">${this.escapeHtml(release.image_tag)}</span>
-                    <span class="change-indicator ${changeType}">${this.getChangeIndicator(changeType)}</span>
+                    <span class="release-card-tag environment-name">${this.escapeHtml(envName)}</span>
+                    <span class="change-indicator ${changeType}">${changeIndicator}</span>
                     <span class="release-card-time">${this.formatTimestamp(release.last_seen)}</span>
                 </div>
                 <div class="release-card-details">
+                    <div class="release-card-detail">
+                        <span class="label">Image Tag:</span>
+                        <span class="value ${differences.tags.includes(envName) ? 'difference-highlight' : ''}">${this.escapeHtml(release.image_tag)}</span>
+                    </div>
+                    <div class="release-card-detail">
+                        <span class="label">Image SHA:</span>
+                        <span class="value image-sha-timeline ${differences.shas.includes(envName) ? 'difference-highlight' : ''}" title="${this.escapeHtml(release.image_sha || '')}">${this.formatImageSHA(release.image_sha)}</span>
+                    </div>
                     <div class="release-card-detail">
                         <span class="label">Image:</span>
                         <span class="value">${this.escapeHtml(release.image_name+":"+release.image_tag)}</span>
@@ -516,21 +589,126 @@ class Timeline {
                         <span class="value">${this.escapeHtml(release.image_repo || 'N/A')}</span>
                     </div>
                     <div class="release-card-detail">
-                        <span class="label">Image SHA:</span>
-                        <span class="value image-sha-timeline" title="${this.escapeHtml(release.image_sha || '')}">${this.formatImageSHA(release.image_sha)}</span>
-                    </div>
-                    <div class="release-card-detail">
-                        <span class="label">First Seen:</span>
-                        <span class="value">${this.formatTimestamp(release.first_seen)}</span>
-                    </div>
-                    <div class="release-card-detail">
-                        <span class="label">Workload Type:</span>
-                        <span class="value">${this.escapeHtml(release.workload_type)}</span>
+                        <span class="label">Last Seen:</span>
+                        <span class="value">${this.formatTimestamp(release.last_seen)}</span>
                     </div>
                 </div>
             </div>
             `;
         }).join('');
+    }
+
+    async fetchEnvironmentReleases(environments, namespace, workload, container) {
+        const environmentReleases = {};
+
+        // Fetch release history for each environment in parallel using the more efficient endpoint
+        const fetchPromises = environments.map(async (envName) => {
+            try {
+                const url = `${this.basePath}/api/releases/history/${encodeURIComponent(this.selectedClient)}/${encodeURIComponent(envName)}/${encodeURIComponent(namespace)}/${encodeURIComponent(workload)}/${encodeURIComponent(container)}`;
+                const response = await fetch(url, this.getFetchOptions());
+
+                if (!response.ok) {
+                    console.warn(`Failed to fetch releases for environment ${envName}:`, response.status);
+                    return;
+                }
+
+                const data = await response.json();
+
+                // Extract the most recent release from the history endpoint response
+                const componentRelease = this.extractCurrentReleaseFromHistory(data);
+                if (componentRelease) {
+                    environmentReleases[envName] = componentRelease;
+                }
+            } catch (error) {
+                console.warn(`Error fetching releases for environment ${envName}:`, error);
+            }
+        });
+
+        await Promise.all(fetchPromises);
+        return environmentReleases;
+    }
+
+    extractCurrentReleaseFromHistory(historyData) {
+        // Extract the most recent release from the history endpoint response
+        // History endpoint returns: {component: {...}, history: {releases: [...], total: N}, timestamp: "..."}
+        let releases = [];
+
+        if (historyData.history && historyData.history.releases) {
+            releases = historyData.history.releases;
+        } else if (historyData.releases) {
+            // Fallback for direct releases array (in case API structure changes)
+            releases = historyData.releases;
+        }
+
+        // Return the most recent release (first in the array, as they're sorted by last_seen desc)
+        if (releases && releases.length > 0) {
+            return releases[0];
+        }
+
+        return null;
+    }
+
+    detectEnvironmentDifferences(environmentReleases) {
+        const environments = Object.keys(environmentReleases);
+        const tags = new Set();
+        const shas = new Set();
+
+        // Collect all unique tags and SHAs
+        environments.forEach(env => {
+            const release = environmentReleases[env];
+            tags.add(release.image_tag);
+            if (release.image_sha) {
+                shas.add(release.image_sha);
+            }
+        });
+
+        // Determine which environments have differences
+        const differentTags = [];
+        const differentShas = [];
+        const differentEnvironments = [];
+
+        if (tags.size > 1 || shas.size > 1) {
+            // Find the most common tag and SHA to use as baseline
+            const tagCounts = {};
+            const shaCounts = {};
+
+            environments.forEach(env => {
+                const release = environmentReleases[env];
+                tagCounts[release.image_tag] = (tagCounts[release.image_tag] || 0) + 1;
+                if (release.image_sha) {
+                    shaCounts[release.image_sha] = (shaCounts[release.image_sha] || 0) + 1;
+                }
+            });
+
+            const mostCommonTag = Object.keys(tagCounts).reduce((a, b) => tagCounts[a] > tagCounts[b] ? a : b);
+            const mostCommonSha = Object.keys(shaCounts).length > 0 ?
+                Object.keys(shaCounts).reduce((a, b) => shaCounts[a] > shaCounts[b] ? a : b) : null;
+
+            environments.forEach(env => {
+                const release = environmentReleases[env];
+                let hasDifference = false;
+
+                if (release.image_tag !== mostCommonTag) {
+                    differentTags.push(env);
+                    hasDifference = true;
+                }
+
+                if (mostCommonSha && release.image_sha && release.image_sha !== mostCommonSha) {
+                    differentShas.push(env);
+                    hasDifference = true;
+                }
+
+                if (hasDifference) {
+                    differentEnvironments.push(env);
+                }
+            });
+        }
+
+        return {
+            environments: differentEnvironments,
+            tags: differentTags,
+            shas: differentShas
+        };
     }
 
     showTimelineContent() {
