@@ -238,8 +238,12 @@ CREATE TABLE releases (
 - **Authentication**: URL-based API key authentication for badge requests
 - **Markdown**: Copyable markdown for README embedding
 
-## Logging
+### Badge Summary
+- **Interactive Table**: Select client, environments, and workloads
+- **Badge Generation**: Real-time badge generation for selected components
+- **Export**: Copyable markdown and HTML for embedding in READMEs
 
+## Logging
 - Structured logging for collection activities
 - Error tracking and reporting
 - Request logging for API endpoints
