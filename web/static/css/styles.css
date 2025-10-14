@@ -347,6 +347,26 @@ button:not(.primary):hover {
     background-color: #2980b9;
 }
 
+.compare-btn {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+
+.selector-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
 /* Empty state */
 .empty-state {
     background: white;

@@ -549,7 +549,7 @@ class Timeline {
                 <div class="release-card environment-missing">
                     <div class="release-card-header">
                         <span class="release-card-tag environment-name">${this.escapeHtml(envName)}</span>
-                        <span class="change-indicator new-deployment">❌ Not Found</span>
+                        <span class="change-indicator new-deployment">Not Found</span>
                     </div>
                     <div class="release-card-details">
                         <div class="release-card-detail">
@@ -561,8 +561,8 @@ class Timeline {
                 `;
             }
 
-            const changeType = hasDifferences ? 'image-change' : 'latest';
-            const changeIndicator = hasDifferences ? '⚠️ Different' : '✅ Consistent';
+            const changeType = hasDifferences ? 'image-change' :  envName === this.selectedEnvironment ? '' : 'latest';
+            const changeIndicator = hasDifferences ? 'Different' : envName === this.selectedEnvironment ? '📌' : 'Consistent';
 
             return `
             <div class="release-card environment-card ${changeType}">
@@ -668,21 +668,10 @@ class Timeline {
         const differentEnvironments = [];
 
         if (tags.size > 1 || shas.size > 1) {
-            // Find the most common tag and SHA to use as baseline
-            const tagCounts = {};
-            const shaCounts = {};
 
-            environments.forEach(env => {
-                const release = environmentReleases[env];
-                tagCounts[release.image_tag] = (tagCounts[release.image_tag] || 0) + 1;
-                if (release.image_sha) {
-                    shaCounts[release.image_sha] = (shaCounts[release.image_sha] || 0) + 1;
-                }
-            });
-
-            const mostCommonTag = Object.keys(tagCounts).reduce((a, b) => tagCounts[a] > tagCounts[b] ? a : b);
-            const mostCommonSha = Object.keys(shaCounts).length > 0 ?
-                Object.keys(shaCounts).reduce((a, b) => shaCounts[a] > shaCounts[b] ? a : b) : null;
+            // baseline is the latest release in the current environment
+            const mostCommonTag = environmentReleases[this.selectedEnvironment].image_tag;
+            const mostCommonSha = environmentReleases[this.selectedEnvironment].image_sha;
 
             environments.forEach(env => {
                 const release = environmentReleases[env];

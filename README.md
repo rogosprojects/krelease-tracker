@@ -11,11 +11,13 @@ A Go application that tracks container image deployments across Kubernetes names
 - **REST API**: Endpoints for triggering collection, retrieving current releases, and accessing release history
 - **Web Interface**:
   - Dashboard with hierarchical table view and full-text search
-  - Timeline page with release history visualization
+  - Timeline page with release history visualization and cross-environment comparison
+  - Environment comparison page for analyzing ALL components across ALL environments
   - Badge viewer to generate shields.io style badges for READMEs
+  - Visual difference detection with color-coded indicators (green for matching, yellow for different, gray for missing)
   - Authentication support for API keys and badges
   - Multi-client, multi-environment support
-- **Master and Slave Modes**: Centralized monitoring and control for multi-cluster deployments. [Read the full guide](MASTER_MODE_GUIDE.md)
+- **Master and Slave Modes**: Centralized monitoring and control for multi-cluster deployments. [Read the full guide](docs/MASTER_MODE_GUIDE.md)
 
 ![Release Tracker Dashboard](docs/images/master_screen.png)
 
@@ -267,9 +269,10 @@ CREATE TABLE releases (
 For detailed guides on specific features and configurations:
 
 - **[API Endpoints Documentation](docs/API_ENDPOINTS_GUIDE.md)** - REST API documentation with authentication details
+- **[Comparison Page Guide](docs/COMPARISON_GUIDE.md)** - Understanding the environment comparison page
+- **[Master Mode Guide](docs/MASTER_MODE_GUIDE.md)** - Setting up master instances for multi-cluster deployments
 - **[Proxy Support Guide](docs/PROXY_SUPPORT_GUIDE.md)** - Configure HTTP/HTTPS proxy for sync and ping operations
 - **[Ping System Guide](docs/PING_SYSTEM_GUIDE.md)** - Health monitoring and slave connectivity tracking
-- **[Master Mode Guide](docs/MASTER_MODE_GUIDE.md)** - Setting up master instances for multi-cluster deployments
 - **[API Key Client Access Control](docs/api-key-client-access-control-implementation.md)** - Detailed API authentication implementation
 
 ## Contributing

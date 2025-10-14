@@ -34,6 +34,24 @@ class Dashboard {
         localStorage.removeItem('release-tracker-environment');
     }
 
+    updateCompareButtonVisibility() {
+        const compareBtn = document.querySelectorAll('.compare-btn');
+        compareBtn.forEach(btn => {
+            // if parent div has class "selected", show the button
+            btn.style.display = btn.parentElement.parentElement.parentElement.classList.contains('selected') ? 'inline-block' : 'none';
+            // else, hide the button
+        });
+    }
+
+    openCompare() {
+        if (this.selectedClient) {
+            const compareUrl = this.apiKey
+                ? `${this.basePath}/compare.html?client=${encodeURIComponent(this.selectedClient)}&apikey=${encodeURIComponent(this.apiKey)}`
+                : `${this.basePath}/compare.html?client=${encodeURIComponent(this.selectedClient)}`;
+            window.location.href = compareUrl;
+        }
+    }
+
     // Get base path from current URL
     getBasePath() {
         const path = window.location.pathname;
@@ -165,6 +183,7 @@ class Dashboard {
                 const data = await response.json();
                 this.clientsEnvironments = data;
                 this.renderControlPanel(data);
+                this.updateCompareButtonVisibility();
 
                 // Set up periodic refresh for ping statuses
                 this.startPingStatusRefresh();
@@ -438,10 +457,9 @@ class Dashboard {
             // For standard API keys with a specific client, auto-select and show environments only
             const isClientPreselected = !isAdminKey && authenticatedClient === clientName;
             const rowClass = isClientPreselected ? 'client-row selected' : 'client-row';
-            const clientClickHandler = isClientPreselected ? '' : `onclick="dashboard.selectClient('${clientName}')"`;
 
             return `
-                <tr class="${rowClass}" data-client="${clientName}" ${clientClickHandler}>
+                <tr class="${rowClass}" data-client="${clientName}" onclick="dashboard.selectClient('${clientName}')">
                     <td class="client-name-cell">
                         <div class="client-name-content">
                             <div class="status-indicator ${clientStatus}"
@@ -477,6 +495,7 @@ class Dashboard {
                                     </span>
                                 `;
                             }).join('')}
+                            <button class="compare-btn" onclick="dashboard.openCompare()" style="display: none;">🔄</button>
                         </div>
                     </td>
                 </tr>
@@ -544,6 +563,7 @@ class Dashboard {
 
         // Update selection display
         this.updateSelectionDisplay();
+        this.updateCompareButtonVisibility();
     }
 
     updateStepIndicator() {
@@ -616,6 +636,9 @@ class Dashboard {
                 title.textContent = 'Selected: ' + this.selectedClient + ' - ' + this.selectedEnvironment;
             }
         }
+
+        // Show compare button when client is selected
+        this.updateCompareButtonVisibility();
     }
 
     expandSelector() {

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Comparison - Release Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/compare.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-title">
+                <h1>Environment Comparison</h1>
+                <p id="clientName" class="client-name">Loading...</p>
+            </div>
+            <div class="header-controls">
+                <button id="backToHome">🏠 Home</button>
+            </div>
+        </header>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Loading environment comparison...</p>
+        </div>
+
+        <div class="error" id="error" style="display: none;">
+            <p id="errorMessage"></p>
+            <button onclick="location.reload()">Retry</button>
+        </div>
+
+        <div class="comparison-container" id="comparisonContainer" style="display: none;">
+            <div class="comparison-header">
+                <div class="comparison-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Environments:</span>
+                        <span id="totalEnvironments" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Components:</span>
+                        <span id="totalComponents" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Differences:</span>
+                        <span id="totalDifferences" class="stat-value">-</span>
+                    </div>
+                </div>
+
+                <div class="comparison-controls">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Search components, namespaces, workloads, or image tags...">
+                        <button id="clearSearch">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-table-container">
+                <table class="comparison-table" id="comparisonTable">
+                    <thead>
+                        <tr>
+                            <th class="component-header text-left">Component</th>
+                            <!-- Environment columns will be dynamically added -->
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonTableBody">
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h3>No components found</h3>
+            <p>No deployments were found for this client across any environments.</p>
+        </div>
+    </div>
+
+    <script src="js/compare.js"></script>
+</body>
+</html>
