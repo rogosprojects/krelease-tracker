@@ -633,7 +633,7 @@ class Dashboard {
         if (selectorHeader) {
             const title = selectorHeader.querySelector('.selector-title');
             if (title) {
-                title.textContent = 'Selected: ' + this.selectedClient + ' - ' + this.selectedEnvironment;
+                title.textContent = 'Client: ' + this.selectedClient.toUpperCase() + ' - Environment: ' + this.selectedEnvironment.toUpperCase();
             }
         }
 
