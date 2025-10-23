@@ -141,14 +141,14 @@ class BadgeViewer {
 
         // Update client name placeholder
         const clientInput = document.getElementById('clientName');
-        if (clientInput && this.config.client_name) {
+        if (clientInput && this.config.client_name && this.config.client_name !== 'unknown') {
             clientInput.placeholder = `e.g., ${this.config.client_name}`;
             clientInput.value = this.config.client_name;
         }
 
         // Update environment name placeholder
         const envInput = document.getElementById('envName');
-        if (envInput && this.config.env_name) {
+        if (envInput && this.config.env_name && this.config.env_name !== 'unknown') {
             envInput.placeholder = `e.g., ${this.config.env_name}`;
             envInput.value = this.config.env_name;
         }
