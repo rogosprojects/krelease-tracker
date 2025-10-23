@@ -834,8 +834,8 @@ class Timeline {
 
         const badgeUrl = `${this.basePath}/badges.html?${badgeParams.toString()}`;
 
-        // Navigate to the badges page
-        window.location.href = badgeUrl;
+        // Navigate to the badges page in a new tab
+        window.open(badgeUrl, '_blank');
     }
 }
 
