@@ -178,10 +178,12 @@ class Timeline {
                 // If no URL params, try to load from local storage
                 this.loadFromStorage();
             }
-
-            console.log('Selected client:', this.selectedClient);
-            console.log('Selected environment:', this.selectedEnvironment);
         }
+        document.getElementById('clientName').textContent = this.selectedClient.toUpperCase();
+        document.getElementById('environmentName').textContent = this.selectedEnvironment.toUpperCase();
+
+        console.log('Selected client:', this.selectedClient);
+        console.log('Selected environment:', this.selectedEnvironment);
     }
 
     async loadConfig() {

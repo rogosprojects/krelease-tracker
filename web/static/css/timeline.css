@@ -412,6 +412,17 @@
     word-break: break-all;
 }
 
+#clientName, #environmentName {
+    background-color: #3498db;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    display: inline-block;
+    color: white;
+}
+
 /* Environment comparison styles */
 .environment-card {
     position: relative;
